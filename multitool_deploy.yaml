@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multitool-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: multitool-app
+  template:
+    metadata:
+      labels:
+        app: multitool-app
+    spec:
+      containers:
+        - name: multitool
+          image: praqma/network-multitool
+          command: ["/bin/sh"]
+          args:
+            - -c
+            - >
+              while true; do
+                clear;
+                cat /shared/data.txt;
+                sleep 5;
+              done
+          volumeMounts:
+            - name: shared-storage
+              mountPath: /shared
+      volumes:
+        - name: shared-storage
+          hostPath:
+            path: /mnt/data
+            type: DirectoryOrCreate

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: multitool-daemonset
+spec:
+  selector:
+    matchLabels:
+      app: multitool
+  template:
+    metadata:
+      labels:
+        app: multitool
+    spec:
+      containers:
+        - name: multitool
+          image: praqma/network-multitool
+          command: ["/bin/sh"]
+          args:
+            - -c
+            - >
+              while true; do
+                clear;
+                cat /host-logs/syslog;
+                sleep 10;
+              done
+          volumeMounts:
+            - name: log-volume
+              mountPath: /host-logs
+              readOnly: true
+      volumes:
+        - name: log-volume
+          hostPath:
+            path: /var/log
+            type: Directory
